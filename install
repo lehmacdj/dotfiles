@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Install script.
+
+echo "Installing dotfiles..."
+
+# Set XDG_CONFIG_HOME if unset
+[ -n "$XDG_CONFIG_HOME" ] || XDG_CONFIG_HOME="$HOME/.config"
+
+# Get the location of the script
+pushd "$(dirname "$0")" > /dev/null
+DOTFILES="$(pwd -P)"
+popd > /dev/null
+
+# Create a file at ~/.dotfiles if no file is present there and not installed there
+if [ "$DOTFILES" != "$HOME/.dotfiles" ]; then
+    if [ -f "$HOME/.dotfiles" ] || [ -d "$HOME/.dotfiles" ]; then
+        echo "A file or directory is present at $HOME/.dotfiles... Aborting."
+        exit 1
+    fi
+        echo "$DOTFILES" > "$HOME/.dotfiles"
+fi
+
+# Takes a pattern (e.g. ".symdot") and a function that transforms the basename
+# of the file to its destination then links all files ending in the pattern to
+# the correct location
+function linkfiles {
+    local pattern="$1"
+    local mapper="$2"
+    tolink=$(find -H "$DOTFILES" -maxdepth 5 -name "*$pattern")
+    for file in $tolink; do
+        local target
+        target="$("$mapper" "$(basename "$file" "$pattern")")"
+        if [ -e "$target" ] || [ -h "$target" ]; then
+            echo "$target exists... Skipping."
+        else
+            echo "Creating symlink for $file"
+            ln -s "$file" "$target"
+        fi
+    done
+}
+
+function symdot_mapper { echo "$HOME/.$1"; }
+# Symlink files that should be symlinked for all platforms
+linkfiles ".symdot" "symdot_mapper"
+
+function config_mapper { echo "HOME/.$1"; }
+# Symlink files that belong in XDG_CONFIG_HOME
+linkfiles ".symconfig" "config_mapper"
