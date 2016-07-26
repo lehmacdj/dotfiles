@@ -3,20 +3,42 @@
 
 echo "Installing dotfiles..."
 
+# Set environment variables that indicate the OS
+# These aren't used by this script but they might be useful if you wish to
+# extend this script to allow for more complicated installation of your dotfiles
+# You can test if the current system is a particular OS by doing
+# [ -n "$OS_NAME" ] 
+# where OS_NAME is the name of the os you want to test for
+uname="$(uname)"
+if [ "$uname" == "Darwin" ]; then
+    DARWIN=1
+elif [ "$uname" == "Linux" ]; then
+    LINUX=1
+fi
+
 # Set XDG_CONFIG_HOME if unset
 [ -n "$XDG_CONFIG_HOME" ] || XDG_CONFIG_HOME="$HOME/.config"
 
 # Get the location of the script
+# pushd adds a directory to the directory stack
 pushd "$(dirname "$0")" > /dev/null
+# we then save the physical path to this file
 DOTFILES="$(pwd -P)"
+# and then pop the directory we were in off the stack to return the directory
+# we were in when we started
 popd > /dev/null
+# > /dev/null means that output from those commands is ignored since /dev/null
+# is a special file that deletes anything that is redirected to it
 
 # Create a file at ~/.dotfiles if no file is present there and not installed there
 if [ "$DOTFILES" != "$HOME/.dotfiles" ]; then
-    if [ -f "$HOME/.dotfiles" ] || [ -d "$HOME/.dotfiles" ]; then
+    # test if a file or symlink is present at ~/.dotfiles
+    if [ -e "$HOME/.dotfiles" ] || [ -h "$HOME/.dotfiles" ]; then
+        # exit the program as this cannot be sucessfully installed then
         echo "A file or directory is present at $HOME/.dotfiles... Aborting."
         exit 1
     fi
+        # put the location of dotfiles at ~/.dotfiles in a file
         echo "$DOTFILES" > "$HOME/.dotfiles"
 fi
 
@@ -24,25 +46,47 @@ fi
 # of the file to its destination then links all files ending in the pattern to
 # the correct location
 function linkfiles {
+    # These are arguments to this function: they are stored in $1, $2, $3...
     local pattern="$1"
     local mapper="$2"
+    # We create a list of files that end in $pattern
     tolink=$(find -H "$DOTFILES" -maxdepth 5 -name "*$pattern")
+    # We link every file in that list to the correct target
     for file in $tolink; do
         local target
+        # figure out what the correct target is using the mapper passed as an
+        # argument
         target="$("$mapper" "$(basename "$file" "$pattern")")"
+        # test if a file or symlink is present at the target
         if [ -e "$target" ] || [ -h "$target" ]; then
+            # do nothing
             echo "$target exists... Skipping."
         else
+            # link the file
             echo "Creating symlink for $file"
             ln -s "$file" "$target"
         fi
     done
 }
 
+# define a function that maps vimrc to ~/.vimrc
 function symdot_mapper { echo "$HOME/.$1"; }
 # Symlink files that should be symlinked for all platforms
 linkfiles ".symdot" "symdot_mapper"
 
-function config_mapper { echo "HOME/.$1"; }
+# define a function that maps nvim to ~/.config/nvim
+function config_mapper { echo "$XDG_CONFIG_HOME/$1"; }
 # Symlink files that belong in XDG_CONFIG_HOME
 linkfiles ".symconfig" "config_mapper"
+
+# Using linkfiles it would be very easy to map more kinds of files to different
+# locations or conditionaly
+# For example to map files ending in .symdot.osx to the home directory only on
+# macOS do:
+
+# [ -n "$DARWIN" ] && linkfiles ".symdot.osx" "symdot_mapper"
+
+# Or to map files ending in .symbin to ~/bin do:
+
+# function symbin_mapper { echo "$HOME/bin/$1"; }
+# linkfiles ".symbin" "symbin_mapper"
