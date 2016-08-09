@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# This file is sourced whenever a login shell is started.  Since all we
+# actually want to do is source our configuration whenever an interactive shell
+# is started, all we do here is source ~/.bashrc which is loaded whenever a
+# non-login interactive shell is started. That way our configuration will be
+# sourced whenever an interactive shell is started.
+
+# This checks if .bashrc exists and if it does sources it.
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi

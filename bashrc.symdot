@@ -1,0 +1,80 @@
+#!/bin/bash
+# Our bash configuration
+
+# Environment
+# The environment variables that are needed for your shell to work right are
+# set here
+
+# Check if ~/.dotfiles is a directory
+if [ -d "$HOME/.dotfiles" ]; then
+    # Set DOTFILES to "~/.dotfiles"
+    DOTFILES="$HOME/.dotfiles"
+elif [ -f "$HOME/.dotfiles" ]; then
+    # Read the first line of ~/.dotfiles and save it to DOTFILES
+    read -r DOTFILES < "$HOME/.dotfiles"
+fi
+# Make DOTFILES available to everything in the current session
+export DOTFILES
+
+# Add the dotfiles bin to the PATH
+# The path is where executables are searched for
+# You can do "echo $path" to see a list of the folders currently searched for
+# executables
+PATH="$DOTFILES/bin:$PATH"
+
+# Check if ~/bin exists
+if [ -d "$HOME/bin" ]; then
+    # if so add it to the PATH
+    PATH="$HOME/bin:$PATH"
+fi
+
+# Extend the path more here
+# For example if you are on a Mac using homebrew you could do something like:
+# [ "$(which brew)" ] && PATH="$(brew --prefix)/bin:$PATH"
+# Eventually it might make sense to move all path configuration to a separate
+# file.
+
+# Make path available in the shell
+export PATH
+
+# Settings
+# Some essential settings
+
+# Don't overwrite the history every session
+shopt -s histappend
+# Save 10,000 lines of history in the history file. Realistically if you prefer
+# you could make this number larger to remember more history.
+HISTFILE=10000
+# Save 5000 lines of history in memory. If you have a system with a lot of ram
+# you could consider making this number a lot larger.
+HISTSIZE=5000
+# You could add more settings here. Try doing "bman shopt" to see a list of
+# all of the options you can set.
+
+# Aliases and Functions
+# Some aliases and functions to make your shell environment more comfortable
+
+# ls - make it colorful all of the time
+# check if gnu coreutils or bsd coreutils are present
+# gnu coreutils are most comonly found on linux systems and
+# bsd coreutils are more comonly found on mac systems
+if [ "$(ls --color=auto)" ]; then
+    alias ls='ls --color=auto'
+    alias ll='ls -al --color=auto'
+else
+    alias ls='ls -G'
+    alias ls='ls -alG'
+fi
+
+# View a specific bit of man information for bash
+# Sets the pager environment variable to a string that searches for the
+# first instance of the string. This is extremely useful while digging
+# through other peoples bash configuration or even this bash configuration.
+function bman {
+    PAGER="less -g -s +'/^       $1'" man 1 bash
+}
+
+# Prompt
+# Here we define a short prompt
+# \w means the entire current directory is included in the prompt
+export PS1="\w> "

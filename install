@@ -38,8 +38,8 @@ if [ "$DOTFILES" != "$HOME/.dotfiles" ]; then
         echo "A file or directory is present at $HOME/.dotfiles... Aborting."
         exit 1
     fi
-        # put the location of dotfiles at ~/.dotfiles in a file
-        echo "$DOTFILES" > "$HOME/.dotfiles"
+    # put the location of dotfiles at ~/.dotfiles in a file
+    echo "$DOTFILES" > "$HOME/.dotfiles"
 fi
 
 # Takes a pattern (e.g. ".symdot") and a function that transforms the basename
