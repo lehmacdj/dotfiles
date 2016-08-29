@@ -1,9 +1,9 @@
 #!/bin/bash
-# Our bash configuration
+# Your bash configuration
 
 # Environment
-# The environment variables that are needed for your shell to work right are
-# set here
+## The environment variables that are needed for your shell to work right are
+## set here
 
 # Check if ~/.dotfiles is a directory
 if [ -d "$HOME/.dotfiles" ]; then
@@ -17,9 +17,9 @@ fi
 export DOTFILES
 
 # Add the dotfiles bin to the PATH
-# The path is where executables are searched for
-# You can do "echo $path" to see a list of the folders currently searched for
-# executables
+## The path is where the shell searches for executables
+## You can do `echo $path` to see a list of the folders the shell currently
+## searches for executables
 PATH="$DOTFILES/bin:$PATH"
 
 # Check if ~/bin exists
@@ -28,53 +28,69 @@ if [ -d "$HOME/bin" ]; then
     PATH="$HOME/bin:$PATH"
 fi
 
-# Extend the path more here
-# For example if you are on a Mac using homebrew you could do something like:
-# [ "$(which brew)" ] && PATH="$(brew --prefix)/bin:$PATH"
-# Eventually it might make sense to move all path configuration to a separate
-# file.
+## Extend the path more here
+## For example if you are on a Mac using homebrew you could do something like:
+## [ "$(which brew)" ] && PATH="$(brew --prefix)/bin:$PATH"
+## Eventually it might make sense to move all path configuration to a separate
+## file.
 
 # Make path available in the shell
 export PATH
 
 # Settings
-# Some essential settings
+## A small collection of settings that I think are almost essential to shell
+## usage.
 
 # Don't overwrite the history every session
 shopt -s histappend
-# Save 10,000 lines of history in the history file. Realistically if you prefer
-# you could make this number larger to remember more history.
+# Save 10,000 lines of history in the history file.
+## This number could also be much larger if you prefer. I use 100,000 and I
+## wouldn't recommmend using a number larger than 1,000,000.
 HISTFILE=10000
-# Save 5000 lines of history in memory. If you have a system with a lot of ram
-# you could consider making this number a lot larger.
+# Save 5000 lines of history in memory.
+## This number is pretty conservative you could easily make it much larger
+## though I would never recommend going higher than 100,000.
 HISTSIZE=5000
-# You could add more settings here. Try doing "bman shopt" to see a list of
-# all of the options you can set.
+## You could add more settings here. Try doing "bman shopt" to see a list of
+## all of the options you can set.
+## One that I really like is `setopt -s extglob`. This increases the number of
+## ways you can glob for files. For example with extglob set you can do
+## `ls !(*.txt)` to show all the files in your current directory that don't end
+## in '.txt'
 
-# Aliases and Functions
-# Some aliases and functions to make your shell environment more comfortable
+# Aliases
 
-# ls - make it colorful all of the time
-# check if gnu coreutils or bsd coreutils are present
-# gnu coreutils are most comonly found on linux systems and
-# bsd coreutils are more comonly found on mac systems
+# Test what kind of coreutils are present on the system
 if [ "$(ls --color=auto)" ]; then
+    # for gnu-coreutils make ls colorful
     alias ls='ls --color=auto'
-    alias ll='ls -al --color=auto'
 else
+    # for bsd-coreutils make ls colorful
     alias ls='ls -G'
-    alias ls='ls -alG'
 fi
+## I would make additional aliases appear here
 
-# View a specific bit of man information for bash
+# Functions
+
+# View specific information about stuff for bash
 # Sets the pager environment variable to a string that searches for the
-# first instance of the string. This is extremely useful while digging
-# through other peoples bash configuration or even this bash configuration.
+# first instance of the argument. If you don't find what you are looking for
+# immediately try pressing n a few times until you see wuat you are trying to
+# find.
 function bman {
     PAGER="less -g -s +'/^       $1'" man 1 bash
 }
+## I think this is a really important command to have because it helps you find
+## help for yourself more easily. It is often confusing to do something like
+## `man if` and then just get the man page for bash builtins and not know where
+## to proceed from there except to look on the internet. With this function it
+## is easy to try bman bash and then find a section of the help that you
+## actually care about.
 
-# Prompt
-# Here we define a short prompt
-# \w means the entire current directory is included in the prompt
+## Aditional functions would follow at this point
+
+# define a simple prompt to appear at the command line:
+# it consists of the current working directory (e.g. ~/src) then '> '
 export PS1="\w> "
+## The kind of prompt you use is really up to you there are really fancy ones
+## for example 'agnoster' and really simple ones like this one
