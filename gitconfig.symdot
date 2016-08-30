@@ -1,0 +1,3 @@
+[core]
+    # The file that git uses globally to ignore files when adding
+    excludesfile = ~/.gitignore_global

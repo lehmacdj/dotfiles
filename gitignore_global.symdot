@@ -1,0 +1,8 @@
+# Files that you never want to commit to a git repository
+
+# Vim swap files
+.*.sw?
+# DS Store files from macOS
+.DS_Store
+# ctag files
+tags
