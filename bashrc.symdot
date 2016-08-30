@@ -50,7 +50,7 @@ shopt -s histappend
 # Save 10,000 lines of history in the history file.
 ## This number could also be much larger if you prefer. I use 100,000 and I
 ## wouldn't recommmend using a number larger than 1,000,000.
-HISTFILE=10000
+HISTFILESIZE=10000
 # Save 5000 lines of history in memory.
 ## This number is pretty conservative you could easily make it much larger
 ## though I would never recommend going higher than 100,000.
@@ -68,7 +68,7 @@ HISTSIZE=5000
 # Aliases
 
 # Test what kind of coreutils are present on the system
-if [ "$(ls --color=auto)" ]; then
+if ls --color=auto >/dev/null 2>&1; then
     # for gnu-coreutils make ls colorful
     alias ls='ls --color=auto'
 else
