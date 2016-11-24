@@ -1,24 +1,17 @@
+" Usability changes
+
 " Turn on filetype detection and default filetype enhancements
 filetype plugin indent on
 " Turn on syntax highlighting
 syntax on
-
-" Make editing easier
-
-" Make backspace chop through the usual stuff
+" make backspace behave in a sane way
 set backspace=indent,eol,start
-" tabs display as 4 spaces
-set tabstop=4
-" convert tabs to spaces when typing
-set expandtab
-" make a tab converted to spaces is 4 spaces
-set shiftwidth=4
-" make spaces behave more like tabs at the beginning of a line
-set smarttab
-" Allow mouse usage by default
-set mouse=a
+" When searching preemptively move to the location of the search string
+set incsearch
+" Allow editing of a new file before the previous file is saved
+set hidden
 
-" Visual improvements to the default UI
+" Purely aesthetic changes
 
 " Show partial command in the lower right hand corner (e.g. typing d will put
 " d in the lower right hand corner until you give it a motion)
@@ -27,7 +20,11 @@ set showcmd
 set number
 " Always show the status bar
 set laststatus=2
-" When searching preemptively move to the location of the search string
-set incsearch
-" Allow editing of a new file before the previous file is saved
-set hidden
+
+"" This is pretty sparse. Vim is extremely configurable and you will probably
+"" eventually end up having a few hundred lines of configuration. If there is
+"" something that you want to configure vim to do it is probably possible. The
+"" best resources are the vim tips wiki and built in vim help. If you do :h I
+"" highly reccommend what you will find there: the documentation of how to use
+"" help in vim. Other than that if you search something like 'convert spaces to
+"" tabs when typing vim' you will probably exactly what you need to achieve that
